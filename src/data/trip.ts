@@ -7,13 +7,15 @@ export type CrewMember = {
   id: 'julian' | 'joop' | 'keanu' | 'ben'
   name: string
   nickname?: string
+  /** One-liner under the avatar in the teaser */
+  tag: string
 }
 
 export const CREW: CrewMember[] = [
-  { id: 'julian', name: 'Julian' },
-  { id: 'joop', name: 'Joop', nickname: 'Joost' },
-  { id: 'keanu', name: 'Keanu', nickname: 'K' },
-  { id: 'ben', name: 'Ben', nickname: 'Ben Cruz' },
+  { id: 'julian', name: 'Julian', tag: 'ist zu hyped' },
+  { id: 'joop', name: 'Joop', nickname: 'Joost', tag: 'alias Joost' },
+  { id: 'keanu', name: 'Keanu', nickname: 'K', tag: 'popelt gerne' },
+  { id: 'ben', name: 'Ben', nickname: 'Ben Cruz', tag: 'wiederholt gerne Memes' },
 ]
 
 export type Fact = { title: string; body: string }

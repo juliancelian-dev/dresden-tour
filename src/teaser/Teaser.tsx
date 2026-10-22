@@ -4,6 +4,7 @@ import { Countdown } from './Countdown'
 import { Crew } from './Crew'
 import { FactDeck } from './FactDeck'
 import { CoinBlock } from './CoinBlock'
+import { RoosterBlock } from './RoosterBlock'
 import { asset } from '../data/trip'
 
 const RULES = [
@@ -91,6 +92,7 @@ export function Teaser() {
       </section>
 
       <CoinBlock />
+      <RoosterBlock />
 
       <section className="mt-16 text-center">
         <div className="niche mx-auto h-[220px] w-[160px]">

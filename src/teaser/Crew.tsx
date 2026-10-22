@@ -54,7 +54,7 @@ export function Crew() {
               />
               <span className="mt-2 font-display text-xl font-extrabold">{m.name}</span>
               <span className="min-h-[1.5em] text-sm text-ink-soft">
-                {active ? tease : m.nickname ? `alias ${m.nickname}` : 'der mit der App'}
+                {active ? tease : m.tag}
               </span>
             </motion.button>
           )
