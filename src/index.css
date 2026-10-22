@@ -64,6 +64,8 @@ html {
 
 body {
   margin: 0;
+  /* Safety net: nothing may push the page sideways on a phone */
+  overflow-x: clip;
   background: var(--page);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -112,4 +114,89 @@ a,
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.clay-btn:disabled {
+  opacity: 0.45;
+  transform: none;
+  box-shadow: 0 4px 0 var(--accent-press);
+}
+
+/* Secondary clay button on the surface colour */
+.clay-soft {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 4px 0 var(--line), var(--shadow);
+  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.clay-soft:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--line);
+}
+.clay-soft:disabled {
+  opacity: 0.45;
+  transform: none;
+}
+
+.clay-gold {
+  background: var(--gold);
+  color: #16302a;
+  box-shadow: 0 4px 0 var(--gold-deep);
+  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.clay-gold:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--gold-deep);
+}
+.clay-gold:disabled {
+  opacity: 0.45;
+  transform: none;
+}
+
+/* Map */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--niche);
+}
+@media (prefers-color-scheme: dark) {
+  .leaflet-tile-pane {
+    filter: brightness(0.75) contrast(1.1) saturate(0.7);
+  }
+}
+.station-pin {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 15px;
+  color: #fff9f0;
+  background: #2e7d6b;
+  border: 3px solid #fff9f0;
+  box-shadow: 0 4px 10px rgba(22, 48, 42, 0.35);
+}
+.station-pin.is-done {
+  background: #9a7212;
+}
+.station-pin.is-next {
+  background: #e9897a;
+  color: #16302a;
+  transform: scale(1.15);
+}
+.me-pin {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #24386e;
+  border: 3px solid #fff9f0;
+  box-shadow: 0 0 0 6px rgba(36, 56, 110, 0.25);
 }

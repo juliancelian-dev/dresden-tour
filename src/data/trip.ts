@@ -11,12 +11,18 @@ export type CrewMember = {
   tag: string
 }
 
+export type PlayerId = CrewMember['id']
+
+export const PLAYER_IDS: PlayerId[] = ['julian', 'joop', 'keanu', 'ben']
+
 export const CREW: CrewMember[] = [
   { id: 'julian', name: 'Julian', tag: 'ist zu hyped' },
   { id: 'joop', name: 'Joop', nickname: 'Joost', tag: 'alias Joost' },
   { id: 'keanu', name: 'Keanu', nickname: 'K', tag: 'popelt gerne' },
   { id: 'ben', name: 'Ben', nickname: 'Ben Cruz', tag: 'wiederholt gerne Memes' },
 ]
+
+export const crewById = (id: PlayerId) => CREW.find((m) => m.id === id)!
 
 export type Fact = { title: string; body: string }
 
