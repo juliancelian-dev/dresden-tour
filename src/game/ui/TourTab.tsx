@@ -32,7 +32,7 @@ export function TourTab({ onOpen }: { onOpen: (id: string) => void }) {
       ) : (
         <div className="rounded-3xl bg-gold p-5 text-[#16302a] shadow-[var(--shadow)]">
           <p className="font-display text-2xl font-extrabold">Tour geschafft.</p>
-          <p>Ab zum Watzke, danach ins Red Rooster. Schaut unter Bier, wer was schuldet.</p>
+          <p>Ab zum Watzke, danach ins Red Rooster. Unter Bier steht, wer die nächste Runde holt.</p>
         </div>
       )}
 
@@ -53,7 +53,7 @@ export function TourTab({ onOpen }: { onOpen: (id: string) => void }) {
                   <span className="block font-semibold">{s.station.name}</span>
                   <span className="block text-sm text-ink-soft">
                     {s.done
-                      ? `${s.losers.map((p) => crewById(p).name).join(' und ')} ${s.losers.length > 1 ? 'zahlen' : 'zahlt'} ein Bier`
+                      ? `Strich für ${s.losers.map((p) => crewById(p).name).join(' und ')}`
                       : s.started
                         ? 'Läuft'
                         : s.station.place}

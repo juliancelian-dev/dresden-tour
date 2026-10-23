@@ -13,8 +13,6 @@ function StationResult({ st }: { st: StationState }) {
   const reduce = useReducedMotion()
   const ranked = [...PLAYER_IDS].sort((a, b) => st.points[b] - st.points[a])
   const loserNames = st.losers.map((p) => crewById(p).name).join(' und ')
-  const creditorNames =
-    st.winners.length === 0 ? 'die anderen' : st.winners.length === 1 ? crewById(st.winners[0]).name : `${st.winners.map((p) => crewById(p).name).join(' oder ')}. Die klären unter sich, wer es kriegt`
   return (
     <motion.section
       initial={reduce ? false : { opacity: 0, y: 16 }}
@@ -27,9 +25,11 @@ function StationResult({ st }: { st: StationState }) {
         <div className="flex-1">
           <p className="text-sm font-semibold text-ink-soft">Station erledigt</p>
           <p className="font-display text-2xl font-extrabold leading-tight">
-            {loserNames} {st.losers.length > 1 ? 'schulden' : 'schuldet'} ein Bier.
+            Strich für {loserNames}.
           </p>
-          <p className="text-[15px] text-ink-soft">An {creditorNames}. Wird abends im Red Rooster eingelöst.</p>
+          <p className="text-[15px] text-ink-soft">
+            {st.losers.length > 1 ? 'Heißt abends je eine Runde.' : 'Heißt abends eine Runde für alle.'} Der Rundenzettel steht unter Bier.
+          </p>
         </div>
       </div>
       <ol className="divide-y divide-line px-5 py-2">

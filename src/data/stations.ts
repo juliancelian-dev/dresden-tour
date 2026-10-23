@@ -464,7 +464,7 @@ export const STATIONS: Station[] = [
     intro: 'Das bin ich. In Gold. Größer als im echten Leben und schöner als ihr. Letzte Station, danach wird abgerechnet.',
     facts: [
       'August reitet hier als römischer Kaiser. Die Figur ist aus Kupfer getrieben und feuervergoldet.',
-      'Gegossen und vergoldet wurde er in den 1730er Jahren.',
+      'Aufgestellt wurde er in den 1730er Jahren, kurz nach Augusts Tod.',
     ],
     tasks: [
       {

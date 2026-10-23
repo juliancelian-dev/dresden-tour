@@ -10,7 +10,7 @@ import { asset } from '../data/trip'
 const RULES = [
   { icon: MapPin, title: 'Neun Stationen', body: 'Vom Zwinger bis zum Goldenen Reiter. Die App kennt den Weg.' },
   { icon: Trophy, title: 'An jeder Station ein Duell', body: 'Schätzen, raten, suchen, fotografieren. Wer am besten ist, kassiert Coins.' },
-  { icon: BeerStein, title: 'Der Letzte zahlt', body: 'Wer an einer Station hinten liegt, schuldet abends ein Bier. Die App vergisst nichts.' },
+  { icon: BeerStein, title: 'Der Letzte zahlt', body: 'Wer an einer Station hinten liegt, holt abends eine Runde. Die App vergisst nichts.' },
 ]
 
 export function Teaser() {

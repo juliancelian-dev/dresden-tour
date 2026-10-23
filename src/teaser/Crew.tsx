@@ -3,8 +3,8 @@ import { motion, useReducedMotion } from 'motion/react'
 import { CREW, asset } from '../data/trip'
 
 const TEASES = [
-  'Schulden: 0 Bier. Noch.',
-  'Hat schon mal geübt, ein Bier auszugeben.',
+  'Offene Runden: 0. Noch.',
+  'Hat schon mal geübt, eine Runde auszugeben.',
   'Behauptet, er kennt Dresden.',
   'Wird beim Schätzen raten.',
   'Sieht aus wie einer, der zahlt.',

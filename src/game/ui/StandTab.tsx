@@ -19,7 +19,7 @@ export function StandTab() {
         <div className="mb-2">
           <h1 className="font-display text-[34px] font-extrabold leading-[1.02] tracking-tight">Spielstand</h1>
           <p className="text-ink-soft">
-            {done} von {game.stations.length} Stationen. {leader ? `${crewById(leader).name} führt.` : 'Noch ist alles offen.'}
+            {done} von {game.stations.length} Stationen. {leader ? `${crewById(leader).name} ${done === game.stations.length ? 'hat gewonnen' : 'führt'}.` : done === game.stations.length ? 'Unentschieden an der Spitze.' : 'Noch ist alles offen.'}
           </p>
         </div>
       </div>

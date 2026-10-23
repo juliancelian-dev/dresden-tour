@@ -21,7 +21,7 @@ export function RoosterBlock() {
             Red Rooster
           </h2>
           <p className="mt-2 text-ink-soft">
-            Abends wird abgerechnet. Jede verlorene Station ist ein Bier, und der Hahn schaut zu.
+            Abends wird abgerechnet. Jede verlorene Station ist eine Runde, und der Hahn schaut zu.
           </p>
         </div>
         <button

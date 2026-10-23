@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import { PLAYER_IDS, crewById } from '../../data/trip'
+import { PLAYER_IDS, crewById, type PlayerId } from '../../data/trip'
 import { STATIONS } from '../../data/stations'
 import { useGame } from '../GameContext'
 import { keys, type Debt } from '../logic'
@@ -38,82 +38,104 @@ function BeerGlass({ paid, total }: { paid: number; total: number }) {
   )
 }
 
-function DebtRow({ debt }: { debt: Debt }) {
+/** Open strokes as tally marks, paid rounds stay faint */
+function Tally({ open, paid }: { open: number; paid: number }) {
+  return (
+    <span className="flex h-6 flex-wrap items-end justify-center gap-[3px]" aria-hidden>
+      {Array.from({ length: open + paid }, (_, i) => (
+        <span key={i} className={`h-5 w-[5px] rounded-full ${i < open ? 'bg-ink' : 'bg-ink/20'}`} />
+      ))}
+    </span>
+  )
+}
+
+/** Whoever has the most open strokes buys next, on a tie the one with the oldest stroke */
+function nextBuyer(open: Debt[]): { player: PlayerId; debt: Debt } | null {
+  if (open.length === 0) return null
+  const count = (p: PlayerId) => open.filter((d) => d.debtor === p).length
+  const oldest = (p: PlayerId) => open.findIndex((d) => d.debtor === p)
+  const player = PLAYER_IDS.filter((p) => count(p) > 0).sort((a, b) => count(b) - count(a) || oldest(a) - oldest(b))[0]
+  return { player, debt: open[oldest(player)] }
+}
+
+function NextRound({ open }: { open: Debt[] }) {
   const { send } = useGame()
   const reduce = useReducedMotion()
-  const station = STATIONS.find((s) => s.id === debt.station)!
+  const next = nextBuyer(open)
+  if (!next) return null
+  const others = PLAYER_IDS.filter((p) => p !== next.player)
   return (
-    <motion.li
-      layout={!reduce}
-      className={`flex items-center gap-3 rounded-3xl p-3 shadow-[var(--shadow)] ${debt.paid ? 'bg-surface/60' : 'bg-surface'}`}
-    >
-      <div className="flex shrink-0 items-center -space-x-2">
-        <Avatar id={debt.debtor} size={44} dim={debt.paid} />
-        {debt.creditors.map((c) => (
-          <Avatar key={c} id={c} size={32} dim={debt.paid} />
-        ))}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className={`font-semibold leading-tight ${debt.paid ? 'text-ink-soft line-through' : ''}`}>
-          {crewById(debt.debtor).name} <span className="font-normal text-ink-soft">an</span> {debt.creditors.map((c) => crewById(c).name).join(' oder ')}
-        </p>
-        <p className="text-sm text-ink-soft">{station.name}</p>
-      </div>
-      {debt.paid ? (
-        <span className="text-sm font-semibold text-accent">bezahlt</span>
-      ) : (
+    <AnimatePresence mode="popLayout" initial={false}>
+      <motion.section
+        key={`${next.debt.station}-${next.player}`}
+        initial={reduce ? false : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={reduce ? undefined : { opacity: 0, y: -12 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+        className="rounded-3xl bg-surface p-5 shadow-[var(--shadow)]"
+        aria-live="polite"
+      >
+        <p className="text-sm font-semibold text-accent">Nächste Runde</p>
+        <div className="mt-2 flex items-center gap-4">
+          <Avatar id={next.player} size={72} ring />
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-[30px] font-extrabold leading-none">{crewById(next.player).name}</p>
+            <p className="mt-1 text-[15px] text-ink-soft">3 Bier für {others.map((p) => crewById(p).name).join(', ').replace(/, ([^,]*)$/, ' und $1')}</p>
+          </div>
+        </div>
         <ConfirmButton
-          label="Bezahlt"
-          confirmLabel="Echt jetzt?"
-          onConfirm={() => send({ key: keys.paid(debt.station, debt.debtor), kind: 'paid', player: debt.debtor, task: debt.station })}
-          className="clay-btn h-11 shrink-0 rounded-full bg-accent px-4 text-sm font-semibold text-on-accent"
+          label="Runde bestellt"
+          confirmLabel="Steht sie schon auf dem Tisch?"
+          onConfirm={() => send({ key: keys.paid(next.debt.station, next.player), kind: 'paid', player: next.player, task: next.debt.station })}
+          className="clay-btn mt-4 h-14 w-full rounded-full bg-accent font-semibold text-on-accent"
         />
-      )}
-    </motion.li>
+      </motion.section>
+    </AnimatePresence>
   )
 }
 
 export function BierTab() {
   const { game } = useGame()
-  const reduce = useReducedMotion()
-  const [showPaid, setShowPaid] = useState(false)
+  const [showLog, setShowLog] = useState(false)
   const total = game.debts.length
   const paid = game.debts.filter((d) => d.paid).length
   const open = game.debts.filter((d) => !d.paid)
-  const perPlayer = PLAYER_IDS.map((p) => ({ p, n: open.filter((d) => d.debtor === p).length })).sort((a, b) => b.n - a.n)
-  const worst = perPlayer[0].n > 0 && perPlayer[0].n !== perPlayer[1].n ? perPlayer[0].p : null
+  const perPlayer = PLAYER_IDS.map((p) => ({
+    p,
+    open: open.filter((d) => d.debtor === p).length,
+    paid: game.debts.filter((d) => d.debtor === p && d.paid).length,
+  }))
+  const most = Math.max(...perPlayer.map((x) => x.open + x.paid))
+  const worstList = perPlayer.filter((x) => x.open + x.paid === most)
+  const worst = most > 0 && worstList.length === 1 ? worstList[0].p : null
 
   return (
     <div className="space-y-6">
       <div className="flex items-end gap-5">
         <BeerGlass paid={paid} total={total} />
         <div className="mb-2 flex-1">
-          <h1 className="font-display text-[34px] font-extrabold leading-[1.02] tracking-tight">Bier-Liste</h1>
+          <h1 className="font-display text-[34px] font-extrabold leading-[1.02] tracking-tight">Rundenzettel</h1>
           <p className="text-ink-soft">
-            {total === 0 ? 'Noch schuldet keiner was. Das ändert sich.' : `${paid} von ${total} Bier bezahlt.`}
+            {total === 0 ? 'Noch keine Striche. Das ändert sich.' : open.length === 0 ? `Alle ${total} Runden geholt. Prost.` : `${paid} von ${total} Runden geholt.`}
           </p>
         </div>
       </div>
 
+      <NextRound open={open} />
+
       {total > 0 && (
-        <div className="grid grid-cols-4 gap-2">
-          {perPlayer.map(({ p, n }) => (
-            <div key={p} className="flex flex-col items-center rounded-2xl bg-surface p-2 shadow-[var(--shadow)]">
-              <Avatar id={p} size={44} />
-              <AnimatePresence mode="popLayout" initial={false}>
-                <motion.span
-                  key={n}
-                  initial={reduce ? false : { y: -10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 10, opacity: 0 }}
-                  className={`mt-1 font-display text-2xl font-extrabold tabular-nums ${n > 0 ? 'text-ink' : 'text-ink-soft'}`}
-                >
-                  {n}
-                </motion.span>
-              </AnimatePresence>
-              <span className="text-xs text-ink-soft">offen</span>
-            </div>
-          ))}
+        <div>
+          <h2 className="font-display text-xl font-extrabold">Striche</h2>
+          <div className="mt-2 grid grid-cols-4 gap-2">
+            {perPlayer.map(({ p, open: o, paid: pd }) => (
+              <div key={p} className="flex flex-col items-center gap-1 rounded-2xl bg-surface p-2 shadow-[var(--shadow)]">
+                <Avatar id={p} size={44} />
+                <Tally open={o} paid={pd} />
+                <span className="text-xs text-ink-soft">{o > 0 ? `${o} offen` : pd > 0 ? `${pd} geholt` : 'sauber'}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-sm text-ink-soft">Kräftige Striche sind offen, blasse schon geholt.</p>
         </div>
       )}
 
@@ -126,26 +148,23 @@ export function BierTab() {
         </div>
       )}
 
-      {open.length > 0 && (
-        <ul className="space-y-2">
-          {open.map((d) => (
-            <DebtRow key={`${d.station}-${d.debtor}`} debt={d} />
-          ))}
-        </ul>
-      )}
-
-      {paid > 0 && (
+      {total > 0 && (
         <div>
-          <button type="button" onClick={() => setShowPaid((v) => !v)} className="min-h-11 text-sm font-semibold text-accent underline underline-offset-4">
-            {showPaid ? 'Bezahlte ausblenden' : `Bezahlte zeigen (${paid})`}
+          <button type="button" onClick={() => setShowLog((v) => !v)} aria-expanded={showLog} className="min-h-11 text-sm font-semibold text-accent underline underline-offset-4">
+            {showLog ? 'Verlauf ausblenden' : 'Wer hat wofür einen Strich?'}
           </button>
-          {showPaid && (
-            <ul className="mt-2 space-y-2">
-              {game.debts
-                .filter((d) => d.paid)
-                .map((d) => (
-                  <DebtRow key={`${d.station}-${d.debtor}`} debt={d} />
-                ))}
+          {showLog && (
+            <ul className="mt-2 divide-y divide-line rounded-3xl bg-surface px-4 shadow-[var(--shadow)]">
+              {game.debts.map((d) => (
+                <li key={`${d.station}-${d.debtor}`} className="flex items-center gap-3 py-3">
+                  <Avatar id={d.debtor} size={32} dim={d.paid} />
+                  <span className="min-w-0 flex-1">
+                    <span className="font-semibold">{crewById(d.debtor).name}</span>
+                    <span className="text-ink-soft"> · {STATIONS.find((s) => s.id === d.station)!.name}</span>
+                  </span>
+                  <span className={`text-sm font-semibold ${d.paid ? 'text-accent' : 'text-ink-soft'}`}>{d.paid ? 'geholt' : 'offen'}</span>
+                </li>
+              ))}
             </ul>
           )}
         </div>
@@ -154,7 +173,7 @@ export function BierTab() {
       {total === 0 && (
         <div className="flex items-end gap-4">
           <Niche src="img/hahn-denkt.webp" alt="Der Hahn überlegt" className="h-[150px] w-[104px]" zoom={1.15} focus="50% 40%" />
-          <p className="mb-3 flex-1 text-ink-soft">Der Hahn wartet schon im Red Rooster. Wer an einer Station Letzter wird, landet hier.</p>
+          <p className="mb-3 flex-1 text-ink-soft">Der Hahn wartet schon im Red Rooster. Wer an einer Station Letzter wird, kriegt hier einen Strich. Jeder Strich ist eine Runde.</p>
         </div>
       )}
     </div>

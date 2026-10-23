@@ -7,7 +7,7 @@ const RULES = [
   { icon: MapPin, title: 'Neun Stationen', body: 'Vom Zwinger bis zum Goldenen Reiter. Die Karte zeigt, wo es langgeht.' },
   { icon: Trophy, title: 'Zwei Aufgaben pro Station', body: 'Jeder tippt auf seinem Handy. Aufgelöst wird, wenn alle drin sind.' },
   { icon: Coins, title: 'Landskron Coins', body: `Ihr startet mit ${START_COINS}. Jeder Punkt bringt einen Coin. Ein Tipp kostet ${PRICES.hint}, ein 50:50 kostet ${PRICES.fifty}.` },
-  { icon: BeerStein, title: 'Der Letzte zahlt', body: 'Wer an einer Station am wenigsten Punkte hat, schuldet dem Sieger abends ein Bier. Bei Gleichstand gibt es ein Stechen.' },
+  { icon: BeerStein, title: 'Der Letzte zahlt', body: 'Wer an einer Station am wenigsten Punkte hat, kriegt einen Strich. Jeder Strich ist abends eine Runde für alle. Bei Gleichstand gibt es ein Stechen.' },
 ]
 
 export function Intro({ me, onDone }: { me: PlayerId; onDone: () => void }) {

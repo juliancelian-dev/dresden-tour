@@ -375,7 +375,7 @@ export function TaskCard({ state, number, tiebreak = false }: { state: TaskState
       className={`rounded-3xl bg-surface p-5 shadow-[var(--shadow)] ${tiebreak ? 'ring-3 ring-rose' : ''}`}
     >
       <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
-        <span className={tiebreak ? 'text-ink' : 'text-accent'}>{tiebreak ? 'Stechen um das Bier' : `Aufgabe ${number}`}</span>
+        <span className={tiebreak ? 'text-ink' : 'text-accent'}>{tiebreak ? 'Stechen um die Runde' : `Aufgabe ${number}`}</span>
         <span className="text-ink-soft">· {TYPE_LABEL[t.type]}</span>
         {state.isAlt && <span className="rounded-full bg-gold/25 px-2 py-0.5 text-xs text-gold-deep">Ersatzaufgabe</span>}
       </div>
